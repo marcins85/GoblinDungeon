@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include <Components/CapsuleComponent.h>
 #include "Bird.generated.h"
+
+class UInputMappingContext;
+class UInputAction;
+class UCapsuleComponent;
+class USkeletalMeshComponent;
 
 UCLASS()
 class GOBLINDUNGEON_API ABird : public APawn
@@ -22,6 +26,18 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputMappingContext* BirdMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MoveAction;
+
+	void Move(const struct FInputActionValue& Value);
+
 private:
+	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent* Capsule;
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* BirdMesh;
 };
