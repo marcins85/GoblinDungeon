@@ -10,6 +10,8 @@ class UInputMappingContext;
 class UInputAction;
 class UCapsuleComponent;
 class USkeletalMeshComponent;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class GOBLINDUNGEON_API ABird : public APawn
@@ -32,7 +34,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* LookAction;
+
 	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -40,4 +46,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* BirdMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* ViewCamera;
 };

@@ -7,6 +7,8 @@
 #include <Components/InputComponent.h>
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 ABird::ABird()
 {
@@ -17,6 +19,12 @@ ABird::ABird()
 
 	BirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BirdMesh"));
 	BirdMesh->SetupAttachment(GetRootComponent());
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(GetRootComponent());
+
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraBoom"));
+	ViewCamera->SetupAttachment(SpringArm);
 	
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -36,10 +44,21 @@ void ABird::BeginPlay()
 
 void ABird::Move(const FInputActionValue& Value)
 {
-	const bool CurrentValue = Value.Get<bool>();
-	if (CurrentValue)
+	const float CurrentValue = Value.Get<float>();
+	if (GetController() && (CurrentValue != 0))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IA_Move triggered"))
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward, CurrentValue);
+	}
+}
+
+void ABird::Look(const FInputActionValue& Value)
+{
+	const FVector2D CurrentValue = Value.Get<FVector2D>();
+	if (GetController())
+	{
+		AddControllerYawInput(CurrentValue.X);
+		AddControllerPitchInput(CurrentValue.Y);
 	}
 }
 
@@ -55,6 +74,7 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UEnhancedInputComponent* EIC = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move);
+		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABird::Look);
 	}
 }
 
